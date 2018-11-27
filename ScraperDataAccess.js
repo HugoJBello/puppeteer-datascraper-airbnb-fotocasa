@@ -33,7 +33,7 @@ module.exports = class ScraperDataAccess {
         return new Promise((resolve, reject) => {
             connection.query(script, function (err, rows, fields) {
                 if (!err) {
-                    console.log('The solution is: ', rows);
+                    console.log(rows);
                     resolve(rows);
                 } else {
                     reject(err);
@@ -52,7 +52,7 @@ module.exports = class ScraperDataAccess {
 
     async saveScrapingPiecesIndex(scapingPiecesIndexRecord) {
         const sql = `REPLACE INTO scraping_pieces_index 
-        (piece_id, piece_name, city_name, scraped, boundingBox1X, boundingBox1Y, boundingBox2X, boundingBox2Y) VALUES("${scapingPiecesIndexRecord.piece_id}", "${scapingPiecesIndexRecord.piece_name}", "${scapingPiecesIndexRecord.city_name}", ${scapingPiecesIndexRecord.scraped}, ${scapingPiecesIndexRecord.boundingBox1X},  ${scapingPiecesIndexRecord.boundingBox1Y},  ${scapingPiecesIndexRecord.boundingBox2X}, ${scapingPiecesIndexRecord.boundingBox2Y});`;
+        (piece_id, piece_name, city_name, device_id, scraped, bounding_box1_x, bounding_box1_y, bounding_box2_x, bounding_box2_y, center_point_x, center_point_y) VALUES("${scapingPiecesIndexRecord.piece_id}", "${scapingPiecesIndexRecord.piece_name}", "${scapingPiecesIndexRecord.city_name}","${scapingPiecesIndexRecord.device_id}", ${scapingPiecesIndexRecord.scraped}, ${scapingPiecesIndexRecord.bounding_box1_x},  ${scapingPiecesIndexRecord.bounding_box1_y},  ${scapingPiecesIndexRecord.bounding_box2_x}, ${scapingPiecesIndexRecord.bounding_box2_y}, ${scapingPiecesIndexRecord.center_point_x}, ${scapingPiecesIndexRecord.center_point_y});`;
         console.log(sql);
         return await this.runQuery(sql);
     }
@@ -62,6 +62,10 @@ module.exports = class ScraperDataAccess {
         return await this.runQuery(sql);
     }
 
+    async dropIndex(device_id){
+        const sql = `DELETE * from scraping_pieces_index WHERE device_id="${device_id}"`;
+        return await this.runQuery(sql);
+    }
     async getNextPieceToScrap() {
 
     }

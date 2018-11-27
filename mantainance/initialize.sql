@@ -10,12 +10,15 @@ USE scraping;
 
 CREATE TABLE IF NOT EXISTS scraping_pieces_index (piece_id VARCHAR(80) not null key, 
                                     piece_name VARCHAR(40), 
-                                    city_name VARCHAR(40), 
+                                    city_name VARCHAR(40),
+                                    device_id VARCHAR(40),
                                     scraped BOOLEAN, 
-                                    boundingBox1X FLOAT, 
-                                    boundingBox1Y FLOAT, 
-                                    boundingBox2X FLOAT, 
-                                    boundingBox2Y FLOAT);
+                                    bounding_box1_x FLOAT, 
+                                    bounding_box1_y FLOAT, 
+                                    bounding_box2_x FLOAT, 
+                                    bounding_box2_y FLOAT,
+                                    center_point_x FLOAT,
+                                    center_point_y FLOAT);
 
 CREATE TABLE IF NOT EXISTS scraping_results (piece_id VARCHAR(80) NOT NULL key references scraping_pieces_index(piece_id),
 								scraping_id VARCHAR(80),
@@ -34,7 +37,7 @@ CREATE TABLE IF NOT EXISTS scraping_execution_log (scraping_id VARCHAR(80) not n
                                 
 -- data input mocked
  
--- REPLACE INTO scraping_pieces_index (piece_id, piece_name, city_name, scraped, boundingBox1X, boundingBox1Y, boundingBox2X, boundingBox2Y) VALUES("testId-piece-0-0", "piece-0-0", "Madrid", true, 0.22, 1.33, 1.44, 0.22); 
+-- REPLACE INTO scraping_pieces_index (piece_id, piece_name, city_name, scraped, bounding_box1_x, bounding_box1_y, bounding_box2_x, bounding_box2_y, center_point_x, center_point_y) VALUES("testId-piece-0-0", "piece-0-0", "Madrid", true, 0.22, 1.33, 1.44, 0.22, 22.1, 22.3); 
 
 --  REPLACE INTO scraping_results (piece_id, scraping_id, app_id, device_id, date_scraped, average_prize_buy, number_of_ads_buy, average_prize_rent, number_of_ads_rent, extra_data) values( "testId-piece-0-0", "scraping-id-test", "app-test", "device-test", sysdate(), 14.44, 4, 123.44, 6, "bla bla bla []");
 
