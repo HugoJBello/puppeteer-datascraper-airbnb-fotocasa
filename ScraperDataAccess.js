@@ -2,7 +2,7 @@ const fs = require('fs');
 const mysql = require('mysql');
 
 module.exports = class ScraperDataAccess {
-    constructor(mysqlHost, mysqlUser, mysqlPassword, mysqlDatabase) {
+    constructor(mysqlHost, mysqlUser, mysqlPassword, mysqlDatabase, sqlCreationPath="./mantainance/initalize.sql") {
         this.mysqlHost = mysqlHost;
         this.mysqlUser = mysqlUser;
         this.mysqlPassword = mysqlPassword;
@@ -10,11 +10,12 @@ module.exports = class ScraperDataAccess {
         this.multipleStatements = true;
 
         this.connection = null;
-        this.tableCreatorScriptPath = './mantainance/initialize.sql';
+        this.tableCreatorScriptPath = sqlCreationPath;
         this.createConnection();
     }
 
     createConnection() {
+        console.log("creating connection " + this.mysqlHost + " " + this.mysqlUser + " " + this.mysqlPassword + " " + this.mysqlDatabase)
         this.connection = mysql.createConnection({
             host: this.mysqlHost,
             user: this.mysqlUser,
@@ -53,7 +54,7 @@ module.exports = class ScraperDataAccess {
     async saveScrapingPiecesIndex(scapingPiecesIndexRecord) {
         const sql = `REPLACE INTO scraping_pieces_index 
         (piece_id, piece_name, city_name, device_id, scraped, bounding_box1_x, bounding_box1_y, bounding_box2_x, bounding_box2_y, center_point_x, center_point_y) VALUES("${scapingPiecesIndexRecord.piece_id}", "${scapingPiecesIndexRecord.piece_name}", "${scapingPiecesIndexRecord.city_name}","${scapingPiecesIndexRecord.device_id}", ${scapingPiecesIndexRecord.scraped}, ${scapingPiecesIndexRecord.bounding_box1_x},  ${scapingPiecesIndexRecord.bounding_box1_y},  ${scapingPiecesIndexRecord.bounding_box2_x}, ${scapingPiecesIndexRecord.bounding_box2_y}, ${scapingPiecesIndexRecord.center_point_x}, ${scapingPiecesIndexRecord.center_point_y});`;
-        console.log(sql);
+        //console.log(sql);
         return await this.runQuery(sql);
     }
 
@@ -63,7 +64,8 @@ module.exports = class ScraperDataAccess {
     }
 
     async dropIndex(device_id){
-        const sql = `DELETE * from scraping_pieces_index WHERE device_id="${device_id}"`;
+        const sql = `DELETE from scraping_pieces_index WHERE device_id="${device_id}"`;
+        //console.log(sql);
         return await this.runQuery(sql);
     }
     async getNextPieceToScrap() {

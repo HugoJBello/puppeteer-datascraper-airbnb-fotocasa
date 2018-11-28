@@ -28,7 +28,7 @@ describe('App', function () {
 
         it('should delete index with device id', async function () {
             const record = {
-                piece_id: "testId-piece-0-0", piece_name: "piece-0-0", city_name: "Test City", device_id:"device-test2",scraped: true,
+                piece_id: "testId-piece-0-1", piece_name: "piece-0-0", city_name: "Test City", device_id:"device-test2",scraped: true,
                 bounding_box1_x: 0.22, bounding_box1_y: 1.33, bounding_box2_x: 1.44, bounding_box2_y: 0.22,
                 center_point_x:22.2, center_point_y:33.33
             }
