@@ -69,7 +69,8 @@ module.exports = class ScraperDataAccess {
         return await this.runQuery(sql);
     }
     async getNextPieceToScrap() {
-
+        const sql = "select * from scraping_pieces_index where scraped = false order by piece_id asc limit 1;";
+        return await this.runQuery(sql);
     }
     async setIndexAsNotScraped(){
         const sql = "update scraping_pieces_index set scraped = false where scraped = true;";
