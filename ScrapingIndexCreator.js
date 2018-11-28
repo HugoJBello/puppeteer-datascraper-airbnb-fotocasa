@@ -4,7 +4,7 @@ const ScraperDataAccess = require('./ScraperDataAccess');
 require('dotenv').load();
 
 module.exports = class ScrapingIndexCreator {
-    constructor(citiesPath = './config/cities.json',  configPath = './config/scrapingConfig.json', sqlCreationPath="./mantainance/initalize.sql") {
+    constructor(citiesPath = './config/cities.json',  configPath = './config/scrapingConfig.json', sqlCreationPath="./mantainance/initialize.sql") {
         this.citiesPath = citiesPath;
         this.configPath = configPath;
         this.config = require(this.configPath);
@@ -53,7 +53,7 @@ module.exports = class ScrapingIndexCreator {
 
                 for (const pieceName in childrenSmallBoxes){
                     console.log(pieceName);
-                    const pieceId = cityName + "--" + pieceName;
+                    const pieceId = cityName + "--" + pieceName + "--" + this.config.deviceId;
                     const boundingBox = childrenSmallBoxes[pieceName].boundingBox;
                     const centerPoint = this.getCenterPoint(boundingBox);
 

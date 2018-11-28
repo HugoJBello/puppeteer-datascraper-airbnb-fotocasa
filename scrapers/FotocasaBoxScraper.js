@@ -3,10 +3,10 @@ const randomUA = require('modern-random-ua');
 
 
 module.exports = class FocotasaBoxScraper {
-    constructor() {
+    constructor(configPath= "../config/scrapingConfig.json") {
         this.browser = null;
         this.page = null;
-        this.config = require("./data/config/scrapingConfig.json");
+        this.config = require(configPath);
 
         this.timeWaitStart = 1 * 1000;
         this.timeWaitClick = 500;
@@ -51,8 +51,11 @@ module.exports = class FocotasaBoxScraper {
                 }
 
                 let averagePrize = this.calculateAverage(adData);
+                if (!averagePrize){
+                    averagePrize=0;
+                }
                 let numberOfAds = adData.length;
-
+                
                 console.log(adData);
                 console.log("------> " + averagePrize);
 

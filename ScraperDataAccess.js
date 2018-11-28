@@ -34,7 +34,6 @@ module.exports = class ScraperDataAccess {
         return new Promise((resolve, reject) => {
             connection.query(script, function (err, rows, fields) {
                 if (!err) {
-                    console.log(rows);
                     resolve(rows);
                 } else {
                     reject(err);
@@ -70,10 +69,28 @@ module.exports = class ScraperDataAccess {
     }
     async getNextPieceToScrap() {
         const sql = "select * from scraping_pieces_index where scraped = false order by piece_id asc limit 1;";
-        return await this.runQuery(sql);
+        const result = await this.runQuery(sql);
+        return result[0];
     }
     async setIndexAsNotScraped(){
         const sql = "update scraping_pieces_index set scraped = false where scraped = true;";
         return await this.runQuery(sql);
+    }
+
+    async setIndexPieceAsScraped(piece_id){
+        const sql = `update scraping_pieces_index set scraped = true where piece_id = "${piece_id}";`;
+        return await this.runQuery(sql);
+    }
+
+    async countIndexEntries(){
+        const sql = "select count(*) from scraping_pieces_index";
+        let result;
+        try{
+            result = await this.runQuery(sql);
+            return parseInt(result[0]["count(*)"]);
+        } catch (err){
+            return null;
+        }
+
     }
 }
