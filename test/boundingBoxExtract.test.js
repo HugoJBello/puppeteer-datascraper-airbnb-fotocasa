@@ -1,5 +1,5 @@
 const chai = require('chai');
-const ExtractBoundingBoxScraper = require('../ExtractBoundingBoxScraper');
+const ExtractBoundingBoxScraper = require('../scrapers/ExtractBoundingBoxScraper');
 const assert = chai.assert;
 
 const expect = chai.expect;

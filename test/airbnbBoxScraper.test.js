@@ -1,5 +1,5 @@
 const chai = require('chai');
-const AirbnbBoxScraper = require("../AirbnbBoxScraper");
+const AirbnbBoxScraper = require("../scrapers/AirbnbBoxScraper");
 
 const assert = chai.assert;
 const chaiAlmost = require('chai-almost');
