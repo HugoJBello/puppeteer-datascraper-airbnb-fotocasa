@@ -69,7 +69,7 @@ module.exports = class FocotasaBoxScraper {
             console.log(err);
             await this.page.screenshot({ path: 'example.png' });
             await this.browser.close();
-            return { numberOfAds: undefined, averagePrize: undefined, adData: undefined };
+            return { numberOfAds: 0, averagePrize: 0, adData: undefined };
         }
     }
 
