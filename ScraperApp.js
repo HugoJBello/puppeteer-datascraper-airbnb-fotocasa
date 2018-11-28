@@ -35,6 +35,7 @@ module.exports = class ScraperApp {
         }
 
         await this.db.setIndexAsNotScraped();
+        this.updateSessionIdInConfig();
         
     }
 
@@ -54,6 +55,12 @@ module.exports = class ScraperApp {
         console.log("updating activity log");
         const record = { scraping_id: this.config.sessionId, last_piece: nextPieceToScrap.piece_id }
         await this.db.saveExecutionLog(record);
+    }
+
+    updateSessionIdInConfig(){
+        const date = new Date().toLocaleString().replace(/:/g, '_').replace(/ /g, '_').replace(/\//g, '_');
+        this.config.sessionId = "scraping-" + this.config.appId + "-" + this.config.deviceId + "--" + date;
+        fs.writeFileSync(this.configPath, JSON.stringify(this.config));
     }
 
 } 
