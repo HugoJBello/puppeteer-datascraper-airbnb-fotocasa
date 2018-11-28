@@ -22,11 +22,13 @@ module.exports = class FocotasaBoxScraper {
         console.log("---");
 
         await this.initializePuppeteer();
-        await this.page.goto(url);
-        await this.page.waitFor(this.timeWaitStart);
-        let results = {}
-        let adData;
+        
         try {
+            await this.page.goto(url);
+            await this.page.waitFor(this.timeWaitStart);
+            
+            let results = {}
+            let adData;
             if (await this.anyResultsFound()) {
                 let numberOfEntries;
                 //numberOfEntries = await this.extractNumberOfEntries();
