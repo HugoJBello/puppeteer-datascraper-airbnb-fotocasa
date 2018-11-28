@@ -57,6 +57,15 @@ describe('App', function () {
             assert(result !== null);
         });
 
+        it('should retrieve next piece to scrap', async function () {
+            //REPLACE INTO scraping_execution_log (scraping_id, last_piece) values ("scraping-id-test", "testId-piece-0-0");
+            result = await db.getNextPieceToScrap();
+            console.log("---");
+            console.log(result[0].piece_id);
+            console.log(result[0]);
+            assert(result !== null);
+        });
+
     });
 
 });
