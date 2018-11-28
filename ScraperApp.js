@@ -42,7 +42,7 @@ module.exports = class ScraperApp {
         console.log("saving new data in database for " + nextPieceToScrap.piece_id);
         console.log(dataBuy);
         const record = {
-            piece_id: nextPieceToScrap.piece_id, scraping_id: this.config.scrapingId,
+            piece_id: nextPieceToScrap.piece_id, scraping_id: this.config.sessionId,
             app_id: this.config.appId, device_id: this.config.deviceId,
             average_prize_buy: dataBuy.averagePrize, number_of_ads_buy: dataBuy.numberOfAds,
             average_prize_rent: dataRent.averagePrize, number_of_ads_rent: dataRent.numberOfAds, extra_data: ""
@@ -52,7 +52,7 @@ module.exports = class ScraperApp {
 
     async saveActivityInLog(nextPieceToScrap){
         console.log("updating activity log");
-        const record = { scraping_id: this.config.scrapingId, last_piece: nextPieceToScrap.piece_id }
+        const record = { scraping_id: this.config.sessionId, last_piece: nextPieceToScrap.piece_id }
         await this.db.saveExecutionLog(record);
     }
 
