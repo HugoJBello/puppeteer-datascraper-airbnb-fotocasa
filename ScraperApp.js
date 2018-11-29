@@ -17,7 +17,7 @@ module.exports = class ScraperApp {
         if (!numPieces || numPieces === 0) {
             await this.indexCreator.regenerateScrapingIndex();
         }
-        let nextPieceToScrap = await this.db.getNextPieceToScrap();
+        let nextPieceToScrap = await this.db.getNextPieceToScrap(this.config.deviceId);
         console.log(nextPieceToScrap);
         while (nextPieceToScrap) {
             console.log("----\n scraping " + nextPieceToScrap.piece_id + "\n----");
@@ -31,7 +31,7 @@ module.exports = class ScraperApp {
             await this.saveActivityInLog(nextPieceToScrap);
             await this.db.setIndexPieceAsScraped(nextPieceToScrap.piece_id);
 
-            nextPieceToScrap = await this.db.getNextPieceToScrap();
+            nextPieceToScrap = await this.db.getNextPieceToScrap(this.config.deviceId);
         }
 
         await this.db.setIndexAsNotScraped();

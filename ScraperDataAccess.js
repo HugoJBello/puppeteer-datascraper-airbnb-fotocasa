@@ -2,7 +2,7 @@ const fs = require('fs');
 const mysql = require('mysql');
 
 module.exports = class ScraperDataAccess {
-    constructor(mysqlHost, mysqlUser, mysqlPassword, mysqlDatabase, sqlCreationPath="./mantainance/initalize.sql") {
+    constructor(mysqlHost, mysqlUser, mysqlPassword, mysqlDatabase, sqlCreationPath = "./mantainance/initalize.sql") {
         this.mysqlHost = mysqlHost;
         this.mysqlUser = mysqlUser;
         this.mysqlPassword = mysqlPassword;
@@ -62,33 +62,33 @@ module.exports = class ScraperDataAccess {
         return await this.runQuery(sql);
     }
 
-    async dropIndex(device_id){
+    async dropIndex(device_id) {
         const sql = `DELETE from scraping_pieces_index WHERE device_id="${device_id}"`;
         //console.log(sql);
         return await this.runQuery(sql);
     }
-    async getNextPieceToScrap() {
-        const sql = "select * from scraping_pieces_index where scraped = false order by piece_id asc limit 1;";
+    async getNextPieceToScrap(device_id) {
+        const sql = `select * from scraping_pieces_index where scraped = false and device_id = "${device_id}" order by piece_id asc limit 1;`;
         const result = await this.runQuery(sql);
         return result[0];
     }
-    async setIndexAsNotScraped(){
+    async setIndexAsNotScraped() {
         const sql = "update scraping_pieces_index set scraped = false where scraped = true;";
         return await this.runQuery(sql);
     }
 
-    async setIndexPieceAsScraped(piece_id){
+    async setIndexPieceAsScraped(piece_id) {
         const sql = `update scraping_pieces_index set scraped = true where piece_id = "${piece_id}";`;
         return await this.runQuery(sql);
     }
 
-    async countIndexEntries(){
+    async countIndexEntries() {
         const sql = "select count(*) from scraping_pieces_index";
         let result;
-        try{
+        try {
             result = await this.runQuery(sql);
             return parseInt(result[0]["count(*)"]);
-        } catch (err){
+        } catch (err) {
             return null;
         }
 
