@@ -1,9 +1,9 @@
 const ScraperDataAccess = require("./ScraperDataAccess");
 const ScrapingIndexCreator = require("./ScrapingIndexCreator");
 const FotocasaBoxScraper = require("./scrapers/FotocasaBoxScraper");
-
+const fs = require("fs");
 module.exports = class ScraperApp {
-    constructor(){
+    constructor() {
         require('dotenv').load();
         this.db = new ScraperDataAccess(process.env["MYSQL_HOST"], process.env["MYSQL_USER"], process.env["MYSQL_PASSWORD"], process.env["MYSQL_DATABASE"]);
         this.indexCreator = new ScrapingIndexCreator();
@@ -12,34 +12,34 @@ module.exports = class ScraperApp {
         this.scraper = new FotocasaBoxScraper();
     }
 
-    async startScraper(){
+    async startScraper() {
         const numPieces = await this.db.countIndexEntries();
-        if (!numPieces || numPieces===0){
+        if (!numPieces || numPieces === 0) {
             await this.indexCreator.regenerateScrapingIndex();
         }
         let nextPieceToScrap = await this.db.getNextPieceToScrap();
         console.log(nextPieceToScrap);
-        while (nextPieceToScrap){
+        while (nextPieceToScrap) {
             console.log("----\n scraping " + nextPieceToScrap.piece_id + "\n----");
             const boundingBox = [[nextPieceToScrap.bounding_box1_x, nextPieceToScrap.bounding_box1_y],
             [nextPieceToScrap.bounding_box2_x, nextPieceToScrap.bounding_box2_y]];
             const centerPoint = [nextPieceToScrap.center_point_x, nextPieceToScrap.center_point_y];
-            
+
             const dataBuy = await this.scraper.extractDataFromBox(boundingBox, centerPoint, "comprar");
             const dataRent = await this.scraper.extractDataFromBox(boundingBox, centerPoint, "alquiler");
-            await this.saveData(nextPieceToScrap,dataBuy,dataRent);
+            await this.saveData(nextPieceToScrap, dataBuy, dataRent);
             await this.saveActivityInLog(nextPieceToScrap);
             await this.db.setIndexPieceAsScraped(nextPieceToScrap.piece_id);
 
-            nextPieceToScrap= await this.db.getNextPieceToScrap();
+            nextPieceToScrap = await this.db.getNextPieceToScrap();
         }
 
         await this.db.setIndexAsNotScraped();
         this.updateSessionIdInConfig();
-        
+
     }
 
-    async saveData(nextPieceToScrap,dataBuy,dataRent){
+    async saveData(nextPieceToScrap, dataBuy, dataRent) {
         console.log("saving new data in database for " + nextPieceToScrap.piece_id);
         console.log(dataBuy);
         const record = {
@@ -51,13 +51,13 @@ module.exports = class ScraperApp {
         await this.db.saveScrapingResults(record);
     }
 
-    async saveActivityInLog(nextPieceToScrap){
+    async saveActivityInLog(nextPieceToScrap) {
         console.log("updating activity log");
         const record = { scraping_id: this.config.sessionId, last_piece: nextPieceToScrap.piece_id }
         await this.db.saveExecutionLog(record);
     }
 
-    updateSessionIdInConfig(){
+    updateSessionIdInConfig() {
         const date = new Date().toLocaleString().replace(/:/g, '_').replace(/ /g, '_').replace(/\//g, '_');
         this.config.sessionId = "scraping-" + this.config.appId + "-" + this.config.deviceId + "--" + date;
         fs.writeFileSync(this.configPath, JSON.stringify(this.config));
