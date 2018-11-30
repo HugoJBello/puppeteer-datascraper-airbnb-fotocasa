@@ -13,7 +13,7 @@ module.exports = class ScraperApp {
     }
 
     async startScraper() {
-        const numPieces = await this.db.countIndexEntries();
+        const numPieces = await this.db.countIndexEntries(this.config.deviceId);
         if (!numPieces || numPieces === 0) {
             await this.indexCreator.regenerateScrapingIndex();
         }

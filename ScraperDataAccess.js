@@ -82,13 +82,13 @@ module.exports = class ScraperDataAccess {
         return await this.runQuery(sql);
     }
 
-    async countIndexEntries() {
-        const sql = "select count(*) from scraping_pieces_index";
+    async countIndexEntries(device_id){
+        const sql = `select count(*) from scraping_pieces_index where device_id="${device_id}"`;
         let result;
-        try {
+        try{
             result = await this.runQuery(sql);
             return parseInt(result[0]["count(*)"]);
-        } catch (err) {
+        } catch (err){
             return null;
         }
 
