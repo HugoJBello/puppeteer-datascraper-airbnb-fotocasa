@@ -8,10 +8,10 @@ CREATE DATABASE IF NOT EXISTS scraping;
 
 USE scraping;
 
-CREATE TABLE IF NOT EXISTS scraping_pieces_index (piece_id VARCHAR(80) not null key, 
-                                    piece_name VARCHAR(40), 
-                                    city_name VARCHAR(40),
-                                    device_id VARCHAR(40),
+CREATE TABLE IF NOT EXISTS scraping_pieces_index (piece_id VARCHAR(150) not null key, 
+                                    piece_name VARCHAR(150), 
+                                    city_name VARCHAR(150),
+                                    device_id VARCHAR(150),
                                     scraped BOOLEAN, 
                                     bounding_box1_x FLOAT, 
                                     bounding_box1_y FLOAT, 
@@ -20,10 +20,10 @@ CREATE TABLE IF NOT EXISTS scraping_pieces_index (piece_id VARCHAR(80) not null 
                                     center_point_x FLOAT,
                                     center_point_y FLOAT);
 
-CREATE TABLE IF NOT EXISTS scraping_results (piece_id VARCHAR(80) NOT NULL key references scraping_pieces_index(piece_id),
-								scraping_id VARCHAR(80),
-                                app_id VARCHAR(40),
-                                device_id VARCHAR(40),
+CREATE TABLE IF NOT EXISTS scraping_results (piece_id VARCHAR(150) NOT NULL key references scraping_pieces_index(piece_id),
+								scraping_id VARCHAR(150),
+                                app_id VARCHAR(150),
+                                device_id VARCHAR(150),
                                 date_scraped DATETIME,
                                 average_prize_buy FLOAT, 
                                 number_of_ads_buy INT, 
@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS scraping_results (piece_id VARCHAR(80) NOT NULL key r
                                 number_of_ads_rent INT,  
                                 extra_data TEXT);
                                 
-CREATE TABLE IF NOT EXISTS scraping_execution_log (scraping_id VARCHAR(80) not null key,
-                                last_piece VARCHAR(40) not null references scraping_results(piece_id)
+CREATE TABLE IF NOT EXISTS scraping_execution_log (scraping_id VARCHAR(150) not null key,
+                                last_piece VARCHAR(150) not null references scraping_results(piece_id)
                                 );
                                 
 -- data input mocked

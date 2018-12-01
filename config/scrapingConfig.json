@@ -1,7 +1,7 @@
 {
-    "sessionId": "scraping-airbnb-gCloud--2018-11-29_14_04_43",
-    "appId": "fotocasa",
+    "sessionId": "scraping-airbnb-raspberry3bp--2018-11-29_14_04_43",
+    "appId": "airbnb",
     "method": "boundingBox",
-    "deviceId": "gCloud",
+    "deviceId": "raspberry3bp",
     "useSavedFeaturesInFile": true
 }

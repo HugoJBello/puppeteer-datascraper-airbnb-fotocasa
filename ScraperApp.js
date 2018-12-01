@@ -1,6 +1,8 @@
 const ScraperDataAccess = require("./ScraperDataAccess");
 const ScrapingIndexCreator = require("./ScrapingIndexCreator");
 const FotocasaBoxScraper = require("./scrapers/FotocasaBoxScraper");
+const AirbnbBoxScraper = require("./scrapers/AirbnbBoxScraper");
+
 const fs = require("fs");
 module.exports = class ScraperApp {
     constructor() {
@@ -9,7 +11,11 @@ module.exports = class ScraperApp {
         this.indexCreator = new ScrapingIndexCreator();
         this.configPath = "./config/scrapingConfig.json";
         this.config = require(this.configPath);
-        this.scraper = new FotocasaBoxScraper();
+        if (this.config.appId === "fotocasa"){
+            this.scraper = new FotocasaBoxScraper();
+        } else {
+            this.scraper = new AirbnbBoxScraper();
+        }
     }
 
     async startScraper() {
@@ -23,11 +29,17 @@ module.exports = class ScraperApp {
             console.log("----\n scraping " + nextPieceToScrap.piece_id + "\n----");
             const boundingBox = [[nextPieceToScrap.bounding_box1_x, nextPieceToScrap.bounding_box1_y],
             [nextPieceToScrap.bounding_box2_x, nextPieceToScrap.bounding_box2_y]];
-            const centerPoint = [nextPieceToScrap.center_point_x, nextPieceToScrap.center_point_y];
-
-            const dataBuy = await this.scraper.extractDataFromBox(boundingBox, centerPoint, "comprar");
-            const dataRent = await this.scraper.extractDataFromBox(boundingBox, centerPoint, "alquiler");
-            await this.saveData(nextPieceToScrap, dataBuy, dataRent);
+            if (this.config.deviceId === "fotocasa"){
+                const centerPoint = [nextPieceToScrap.center_point_x, nextPieceToScrap.center_point_y];
+                const dataBuy = await this.scraper.extractDataFromBox(boundingBox, centerPoint, "comprar");
+                const dataRent = await this.scraper.extractDataFromBox(boundingBox, centerPoint, "alquiler");
+                await this.saveData(nextPieceToScrap, dataBuy, dataRent);
+            } else {
+                const data = await this.scraper.extractDataFromBox(boundingBox);
+                console.log(data);
+                await this.saveData(nextPieceToScrap, undefined, data);
+            }
+            
             await this.saveActivityInLog(nextPieceToScrap);
             await this.db.setIndexPieceAsScraped(nextPieceToScrap.piece_id);
 
@@ -41,13 +53,23 @@ module.exports = class ScraperApp {
 
     async saveData(nextPieceToScrap, dataBuy, dataRent) {
         console.log("saving new data in database for " + nextPieceToScrap.piece_id);
-        console.log(dataBuy);
-        const record = {
-            piece_id: nextPieceToScrap.piece_id, scraping_id: this.config.sessionId,
-            app_id: this.config.appId, device_id: this.config.deviceId,
-            average_prize_buy: dataBuy.averagePrize, number_of_ads_buy: dataBuy.numberOfAds,
-            average_prize_rent: dataRent.averagePrize, number_of_ads_rent: dataRent.numberOfAds, extra_data: ""
+        let record;
+        if(dataBuy){
+            record = {
+                piece_id: nextPieceToScrap.piece_id, scraping_id: this.config.sessionId,
+                app_id: this.config.appId, device_id: this.config.deviceId,
+                average_prize_buy: dataBuy.averagePrize, number_of_ads_buy: dataBuy.numberOfAds,
+                average_prize_rent: dataRent.averagePrize, number_of_ads_rent: dataRent.numberOfAds, extra_data: ""
+            }
+        } else {
+            record = {
+                piece_id: nextPieceToScrap.piece_id, scraping_id: this.config.sessionId,
+                app_id: this.config.appId, device_id: this.config.deviceId,
+                average_prize_buy: 0, number_of_ads_buy: 0,
+                average_prize_rent: dataRent.averagePrize, number_of_ads_rent: dataRent.numberOfAds, extra_data: ""
+            }
         }
+        
         await this.db.saveScrapingResults(record);
     }
 

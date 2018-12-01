@@ -7,14 +7,13 @@ module.exports = class AirbnbBoxScraper {
         this.timeWaitStart = 3 * 1000;
         this.timeWaitClick = 1000;
         this.retries = 3;
-        this.scrapingIndexPath = "./data/separatedFeatures/scrapingIndex.json";
 
         this.browser = null;
         this.page = null;
     }
 
 
-    async extractPrizeAndMetersUsingBoundingBox(boundingBox) {
+    async extractDataFromBox(boundingBox) {
         //https://www.airbnb.es/s/madrid/homes?refinement_paths%5B%5D=%2Fhomes&query=madrid&click_referer=t%3ASEE_ALL%7Csid%3Aa7d1f39d-6aca-46ed-978b-e7866130e117%7Cst%3AMAGAZINE_HOMES&allow_override%5B%5D=&map_toggle=true&zoom=18&search_by_map=true&sw_lat=40.41092513867345&sw_lng=-3.703897645186509&ne_lat=40.41257982118033&ne_lng=-3.700771836660386&s_tag=gSIPGig_"];
         //const url = `https://www.airbnb.es/s/madrid/homes?refinement_paths%5B%5D=%2Fhomes&query=madrid&click_referer=t%3ASEE_ALL%7Csid%3Aa7d1f39d-6aca-46ed-978b-e7866130e117%7Cst%3AMAGAZINE_HOMES&allow_override%5B%5D=&map_toggle=true&zoom=15&search_by_map=true&sw_lat=${boundingBox[1][1]}&sw_lng=${boundingBox[0][0]}&ne_lat=${boundingBox[0][1]}&ne_lng=${boundingBox[1][0]}&s_tag=gSIPGig_`;
         const url = `https://www.airbnb.es/s/madrid/homes?refinement_paths%5B%5D=%2Fhomes&query=madrid&click_referer=t%3ASEE_ALL%7Csid%3Aa7d1f39d-6aca-46ed-978b-e7866130e117%7Cst%3AMAGAZINE_HOMES&allow_override%5B%5D=&map_toggle=true&zoom=15&search_by_map=true&sw_lat=${boundingBox[1][1]}&sw_lng=${boundingBox[0][0]}&ne_lat=${boundingBox[0][1]}&ne_lng=${boundingBox[1][0]}`;
@@ -26,40 +25,50 @@ module.exports = class AirbnbBoxScraper {
 
 
         await this.initializePuppeteer();
-        await this.page.goto(url);
-        await this.page.waitFor(this.timeWaitStart);
+        try{
+            
+            await this.page.goto(url);
+            await this.page.waitFor(this.timeWaitStart);
 
-        let numberOfEntries;
-        let prize;
+            let numberOfEntries;
+            let prize;
 
-        let tryCount = 1;
-        let tryAgain = true
-        while (tryAgain) {
-            console.log("\n--->try number " + tryCount);
-            let resultsFound = await this.anyResultsFound();
-            let capchaFound = false //await checkIfCapcha();
+            let tryCount = 1;
+            let tryAgain = true
+            while (tryAgain) {
+                console.log("\n--->try number " + tryCount);
+                let resultsFound = await this.anyResultsFound();
 
-            if (resultsFound) {
-                console.log("results were found");
-                numberOfEntries = await this.extractNumberOfEntries();
-                console.log("found " + numberOfEntries + " entries in this page");
-
-                prize = await this.extracPrize();
-                console.log("average prize " + prize + "  in this page");
-            } else {
-                console.log("no results were found for this search");
+                if (resultsFound) {
+                    console.log("results were found");
+                    numberOfEntries = await this.extractNumberOfEntries();
+                    console.log("found " + numberOfEntries + " entries in this page");
+                    if (numberOfEntries && numberOfEntries !== 0){
+                        prize = await this.extracPrize();
+                        console.log("average prize " + prize + "  in this page");
+                    } else {
+                        prize = 0;
+                    }
+                    
+                } else {
+                    console.log("no results were found for this search");
+                    prize = 0;
+                }
+                tryAgain = (!numberOfEntries && tryCount < this.retries);
+                tryCount = tryCount + 1;
+                //await this.page.waitFor(this.timeWaitClick);
             }
-            tryAgain = (!numberOfEntries && tryCount < this.retries);
-            tryCount = tryCount + 1;
-            //await this.page.waitFor(this.timeWaitClick);
+
+
+
+            await this.page.screenshot({ path: 'example.png' });
+            await this.browser.close();
+
+            return { averagePrize:prize || 0, numberOfAds:numberOfEntries || 0, adData:""};
+        } catch (err){
+            console.error(err);
+            return {averagePrize:0, numberOfAds:0, adData:""};
         }
-
-
-
-        await this.page.screenshot({ path: 'example.png' });
-        await this.browser.close();
-
-        return { numberOfEntries, prize };
     }
 
     async initializePuppeteer() {
@@ -83,8 +92,13 @@ module.exports = class AirbnbBoxScraper {
     }
 
     async extracPrize() {
-        await this.clickPrizeButton();
-        return await this.readPrize();
+        try{
+            await this.clickPrizeButton();
+            return await this.readPrize();
+        } catch (err) {
+            return 0
+        }
+        
     }
 
     async clickPrizeButton() {
@@ -114,7 +128,7 @@ module.exports = class AirbnbBoxScraper {
             return prize;
         } catch (err) {
             console.log(err);
-            return null;
+            return 0;
         }
     }
     async extractNumberOfEntries() {
@@ -130,7 +144,8 @@ module.exports = class AirbnbBoxScraper {
             await this.goToLastPage()
             numberOfEntries = await this.readNumberOfEntries();
         }
-        return parseInt(numberOfEntries.replace("alojamientos", "").trim());
+        numberOfEntries = parseInt(numberOfEntries.replace("alojamientos", "").trim()) || 0;
+        return numberOfEntries
     }
 
     async titleNumEntriesLess300() {
