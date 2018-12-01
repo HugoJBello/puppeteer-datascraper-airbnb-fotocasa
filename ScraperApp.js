@@ -29,7 +29,7 @@ module.exports = class ScraperApp {
             console.log("----\n scraping " + nextPieceToScrap.piece_id + "\n----");
             const boundingBox = [[nextPieceToScrap.bounding_box1_x, nextPieceToScrap.bounding_box1_y],
             [nextPieceToScrap.bounding_box2_x, nextPieceToScrap.bounding_box2_y]];
-            if (this.config.deviceId === "fotocasa"){
+            if (this.config.appId === "fotocasa"){
                 const centerPoint = [nextPieceToScrap.center_point_x, nextPieceToScrap.center_point_y];
                 const dataBuy = await this.scraper.extractDataFromBox(boundingBox, centerPoint, "comprar");
                 const dataRent = await this.scraper.extractDataFromBox(boundingBox, centerPoint, "alquiler");
