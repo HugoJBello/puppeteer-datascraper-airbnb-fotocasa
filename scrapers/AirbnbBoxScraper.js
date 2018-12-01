@@ -10,6 +10,8 @@ module.exports = class AirbnbBoxScraper {
 
         this.browser = null;
         this.page = null;
+        require('dotenv').load();
+
     }
 
 

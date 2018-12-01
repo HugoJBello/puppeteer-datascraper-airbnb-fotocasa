@@ -10,6 +10,8 @@ module.exports = class FocotasaBoxScraper {
 
         this.timeWaitStart = 1 * 1000;
         this.timeWaitClick = 500;
+        require('dotenv').load();
+
     }
 
     async extractDataFromBox(boundingBox, centerPoint, type = "comprar") {
