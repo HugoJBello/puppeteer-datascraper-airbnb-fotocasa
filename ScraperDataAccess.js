@@ -82,15 +82,32 @@ module.exports = class ScraperDataAccess {
         return await this.runQuery(sql);
     }
 
-    async countIndexEntries(device_id){
+    async countIndexEntries(device_id) {
         const sql = `select count(*) from scraping_pieces_index where device_id="${device_id}"`;
         let result;
-        try{
+        try {
             result = await this.runQuery(sql);
             return parseInt(result[0]["count(*)"]);
-        } catch (err){
+        } catch (err) {
             return null;
         }
 
+    }
+
+    async getScrapedCities(scraping_id) {
+        const sql = `select r.city_name from scraping_pieces_index r left join scraping_results t on  t.piece_id = r.piece_id
+        where t.scraping_id = "${scraping_id}"
+        group by r.city_name`;
+        const result = await this.runQuery(sql);
+        return result;
+    }
+
+    async getScrapingResultsCity(city_name, scraping_id) {
+        const sql = `select t.*, s.* from scraping_results t ,scraping_pieces_index s where
+        t.piece_id = s.piece_id and 
+        t.scraping_id = "${scraping_id}"
+        and s.city_name = "${city_name}";`;
+        const result = await this.runQuery(sql);
+        return result;
     }
 }

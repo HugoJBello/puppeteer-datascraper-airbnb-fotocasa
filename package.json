@@ -28,6 +28,7 @@
     "modern-random-ua": "^1.0.3",
     "mongodb": "^3.1.8",
     "mysql": "^2.16.0",
+    "objects-to-csv": "^1.2.1",
     "puppeteer": "^1.10.0"
   }
 }
