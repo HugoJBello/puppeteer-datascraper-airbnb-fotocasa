@@ -1,7 +1,1 @@
-{
-    "sessionId": "scraping-airbnb-raspberry3bp--2018-11-29_14_04_43",
-    "appId": "airbnb",
-    "method": "boundingBox",
-    "deviceId": "raspberry3bp",
-    "useSavedFeaturesInFile": true
-}
+{"sessionId":"scraping-airbnb-raspberry3bp--12_4_2018,_8_00_41_AM","appId":"airbnb","method":"boundingBox","deviceId":"raspberry3bp","useSavedFeaturesInFile":true}

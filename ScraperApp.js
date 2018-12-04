@@ -21,6 +21,7 @@ module.exports = class ScraperApp {
     async startScraper() {
         const numPieces = await this.db.countIndexEntries(this.config.deviceId);
         if (!numPieces || numPieces === 0) {
+            console.log("regenerating index");
             await this.indexCreator.regenerateScrapingIndex();
         }
         let nextPieceToScrap = await this.db.getNextPieceToScrap(this.config.deviceId);
@@ -41,12 +42,10 @@ module.exports = class ScraperApp {
             }
             
             await this.saveActivityInLog(nextPieceToScrap);
-            await this.db.setIndexPieceAsScraped(nextPieceToScrap.piece_id);
-
+            await this.changePieceToScraped(nextPieceToScrap);
             nextPieceToScrap = await this.db.getNextPieceToScrap(this.config.deviceId);
         }
-
-        await this.db.setIndexAsNotScraped();
+        await this.db.setIndexAsNotScraped(this.config.deviceId);
         this.updateSessionIdInConfig();
 
     }
@@ -83,6 +82,11 @@ module.exports = class ScraperApp {
         const date = new Date().toLocaleString().replace(/:/g, '_').replace(/ /g, '_').replace(/\//g, '_');
         this.config.sessionId = "scraping-" + this.config.appId + "-" + this.config.deviceId + "--" + date;
         fs.writeFileSync(this.configPath, JSON.stringify(this.config));
+    }
+
+    async changePieceToScraped(nextPieceToScrap){
+        console.log("changing piece " + nextPieceToScrap.piece_id + " in index to set it as scraped");
+        const result = await this.db.setIndexPieceAsScraped(nextPieceToScrap.piece_id);
     }
 
 } 

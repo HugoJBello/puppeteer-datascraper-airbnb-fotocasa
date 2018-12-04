@@ -44,6 +44,21 @@ module.exports = class ScraperDataAccess {
         });
     }
 
+    async runQueryWithInput(script, array) {
+        const connection = this.connection;
+        return new Promise((resolve, reject) => {
+            connection.query(script, array, function (err, rows, fields) {
+                if (!err) {
+                    resolve(rows);
+                } else {
+                    reject(err);
+                    console.log('Error while performing Query.');
+                    console.log(err);
+                }
+            });
+        });
+    }
+
     async saveExecutionLog(executionLogRecord) {
         const sql = `REPLACE INTO scraping_execution_log(scraping_id, last_piece) 
         values("${executionLogRecord.scraping_id}", "${executionLogRecord.last_piece}")`;
@@ -72,14 +87,14 @@ module.exports = class ScraperDataAccess {
         const result = await this.runQuery(sql);
         return result[0];
     }
-    async setIndexAsNotScraped() {
-        const sql = "update scraping_pieces_index set scraped = false where scraped = true;";
+    async setIndexAsNotScraped(device_id) {
+        const sql = `update scraping_pieces_index set scraped = false where scraped = true and device_id = "${device_id}";`;
         return await this.runQuery(sql);
     }
 
     async setIndexPieceAsScraped(piece_id) {
-        const sql = `update scraping_pieces_index set scraped = true where piece_id = "${piece_id}";`;
-        return await this.runQuery(sql);
+        const sql = `update scraping_pieces_index set scraped = true where piece_id = ?;COMMIT;`;
+        return await this.runQueryWithInput(sql, [piece_id]);
     }
 
     async countIndexEntries(device_id) {
