@@ -44,7 +44,7 @@ module.exports = class ScrapingIndexCreator {
 
             for (const cusecFeature of features) {
                 const cusec = cusecFeature["cusec"];
-                console.log("saving piece " + cusec)
+                console.log("saving piece " + cusec + " from " + cityName);
                 const boundingBox = cusecFeature.boundingBox;
                 const centerPoint = cusecFeature.centerPoint;
 
