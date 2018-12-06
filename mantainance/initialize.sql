@@ -18,7 +18,9 @@ CREATE TABLE IF NOT EXISTS scraping_pieces_index (piece_id VARCHAR(150) not null
                                     bounding_box2_x FLOAT, 
                                     bounding_box2_y FLOAT,
                                     center_point_x FLOAT,
-                                    center_point_y FLOAT);
+                                    center_point_y FLOAT,
+                                    geojson_coordinates LONGTEXT,
+                                    method VARCHAR(150));
 
 CREATE TABLE IF NOT EXISTS scraping_results (piece_id VARCHAR(150) NOT NULL key references scraping_pieces_index(piece_id),
 								scraping_id VARCHAR(150),
