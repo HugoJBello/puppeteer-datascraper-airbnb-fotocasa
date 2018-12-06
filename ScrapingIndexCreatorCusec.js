@@ -47,7 +47,7 @@ module.exports = class ScrapingIndexCreator {
                 console.log("saving piece " + cusec + " from " + cityName);
                 const boundingBox = cusecFeature.boundingBox;
                 const centerPoint = cusecFeature.centerPoint;
-
+                const geojsonGeometry = cusecFeature.geojsonGeometry
                 const pieceName = cusec;
                 const pieceId = cityName + "--" + pieceName + "--" + this.config.deviceId;
 
@@ -55,7 +55,8 @@ module.exports = class ScrapingIndexCreator {
                     piece_id: pieceId, piece_name: pieceName, city_name: cityName, device_id: this.config.deviceId, scraped: false,
                     bounding_box1_x: boundingBox[0][0], bounding_box1_y: boundingBox[0][1],
                     bounding_box2_x: boundingBox[1][0], bounding_box2_y: boundingBox[1][1],
-                    center_point_x: centerPoint[0], center_point_y: centerPoint[1]
+                    center_point_x: centerPoint[0], center_point_y: centerPoint[1],
+                    geojson_coordinates:geojsonGeometry, method:"cusec"
                 }
                 this.scrapingIndex.push(record);
                 await this.db.saveScrapingPiecesIndex(record);
@@ -90,6 +91,7 @@ module.exports = class ScrapingIndexCreator {
         processedFeature["boundingBox"] = boundingBox;
         const centerPoint = this.getCenterPoint(boundingBox);
         processedFeature["centerPoint"] = centerPoint;
+        processedFeature["geojsonGeometry"] =JSON.stringify({geometry:feature["geometry"]}).replace(new RegExp("\"", 'g'), "'");;
         return processedFeature;
 
     }

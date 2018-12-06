@@ -59,10 +59,13 @@ module.exports = class ScrapingIndexCreator {
 
 
                     const record = {
-                        piece_id: pieceId, piece_name: pieceName, city_name: cityName, device_id: this.config.deviceId, scraped: false,
+                        piece_id: pieceId, piece_name: pieceName, 
+                        city_name: cityName, device_id: this.config.deviceId, 
+                        scraped: false,
                         bounding_box1_x: boundingBox[0][0], bounding_box1_y: boundingBox[0][1],
                         bounding_box2_x: boundingBox[1][0], bounding_box2_y: boundingBox[1][1],
-                        center_point_x:centerPoint[0], center_point_y:centerPoint[1]
+                        center_point_x:centerPoint[0], 
+                        center_point_y:centerPoint[1], method:"boundingBox"
                     }
                     this.scrapingIndex.push(record);
                     await this.db.saveScrapingPiecesIndex(record);
