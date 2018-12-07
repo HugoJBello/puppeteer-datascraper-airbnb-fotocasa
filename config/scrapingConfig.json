@@ -1,1 +1,7 @@
-{"sessionId":"scraping-fotocasa-raspberryOld--2018-12-7_13_01_40","appId":"fotocasa","method":"boundingBox","deviceId":"raspberryOld","useSavedFeaturesInFile":true}
+{
+    "sessionId": "scraping-fotocasa-raspberryOld--12_5_2018,_2_27_58_PM",
+    "appId": "fotocasa",
+    "method": "cusec",
+    "deviceId": "raspberryOld",
+    "useSavedFeaturesInFile": true
+}
