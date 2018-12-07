@@ -10,7 +10,8 @@ require('dotenv').load();
     const geojsonGen = new GeojsonGeneratorFromResult();
 
     //const id = "scraping-airbnb-gCloud--2018-11-29_14_04_43";
-    const id = "scraping-fotocasa-gCloud--12_3_2018,_2_46_43_PM";
+    //const id = "scraping-fotocasa-gCloud--12_7_2018,_7_11_51_AM";
+    const id = "scraping-airbnb-raspberry3bp--2018-11-29_14_04_43";
     const outputPath = "tmp";
     const cities = await db.getScrapedCities(id);
 

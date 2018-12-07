@@ -54,8 +54,8 @@ module.exports = class ScraperApp {
             await this.changePieceToScraped(nextPieceToScrap);
             nextPieceToScrap = await this.db.getNextPieceToScrap(this.config.deviceId);
         }
-        await this.db.setIndexAsNotScraped(this.config.deviceId);
         this.updateSessionIdInConfig();
+        await this.db.setIndexAsNotScraped(this.config.deviceId);
 
     }
 
@@ -64,6 +64,7 @@ module.exports = class ScraperApp {
         let record;
         if (dataBuy) {
             record = {
+                result_id: nextPieceToScrap.piece_id + "---" + nextPieceToScrap.scraping_id,
                 piece_id: nextPieceToScrap.piece_id, scraping_id: this.config.sessionId,
                 app_id: this.config.appId, device_id: this.config.deviceId,
                 average_prize_buy: dataBuy.averagePrize, number_of_ads_buy: dataBuy.numberOfAds,
@@ -71,6 +72,7 @@ module.exports = class ScraperApp {
             }
         } else {
             record = {
+                result_id: nextPieceToScrap.piece_id + "---" + nextPieceToScrap.scraping_id,
                 piece_id: nextPieceToScrap.piece_id, scraping_id: this.config.sessionId,
                 app_id: this.config.appId, device_id: this.config.deviceId,
                 average_prize_buy: 0, number_of_ads_buy: 0,
@@ -83,7 +85,10 @@ module.exports = class ScraperApp {
 
     async saveActivityInLog(nextPieceToScrap) {
         console.log("updating activity log");
-        const record = { scraping_id: this.config.sessionId, last_piece: nextPieceToScrap.piece_id }
+        const record = {
+            scraping_id: this.config.sessionId, last_piece: nextPieceToScrap.piece_id,
+            result_id: nextPieceToScrap.piece_id + "---" + nextPieceToScrap.scraping_id
+        }
         await this.db.saveExecutionLog(record);
     }
 

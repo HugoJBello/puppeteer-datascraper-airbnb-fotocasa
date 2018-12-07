@@ -1,18 +1,18 @@
 
-const ExtractBoundingBoxScraper = require('./scrapers/ExtractBoundingBoxScraper')
+const ExtractBoundingBoxScraper = require('./scrapers/ExtractBoundingBoxApi')
 const ScraperDataAccess = require('./ScraperDataAccess');
 require('dotenv').load();
 
 module.exports = class ScrapingIndexCreator {
-    constructor(citiesPath = './config/cities.json',  configPath = './config/scrapingConfig.json', sqlCreationPath="./mantainance/initialize.sql") {
+    constructor(citiesPath = './config/cities.json', configPath = './config/scrapingConfig.json', sqlCreationPath = "./mantainance/initialize.sql") {
         this.citiesPath = citiesPath;
         this.configPath = configPath;
         this.config = require(this.configPath);
         this.cities = require(this.citiesPath).cities;
         this.scraper = new ExtractBoundingBoxScraper();
-        this.db = new ScraperDataAccess(process.env["MYSQL_HOST"], process.env["MYSQL_USER"], 
-        process.env["MYSQL_PASSWORD"], process.env["MYSQL_DATABASE"],sqlCreationPath);
-        
+        this.db = new ScraperDataAccess(process.env["MYSQL_HOST"], process.env["MYSQL_USER"],
+            process.env["MYSQL_PASSWORD"], process.env["MYSQL_DATABASE"], sqlCreationPath);
+
         this.maxSize = 0.005;
         this.maxNumberRows = 65; // aprox Math.sqrt(1000);
         this.minNumberRows = 4;
@@ -20,17 +20,17 @@ module.exports = class ScrapingIndexCreator {
     }
 
     async regenerateScrapingIndex() {
-        try{
+        try {
             await this.db.dropIndex(this.config.deviceId);
-        } catch (err){
+        } catch (err) {
             console.log(err);
         }
-        try{
+        try {
             await this.db.createTables();
-        } catch (err){
+        } catch (err) {
             console.log(err);
         }
-        
+
 
         this.scrapingIndex = []
 
@@ -51,7 +51,7 @@ module.exports = class ScrapingIndexCreator {
 
                 const childrenSmallBoxes = this.popullateBoundingBoxWithPieces(boundingBox, distX, distY, lengthX, lengthY)
 
-                for (const pieceName in childrenSmallBoxes){
+                for (const pieceName in childrenSmallBoxes) {
                     console.log(pieceName);
                     const pieceId = cityName + "--" + pieceName + "--" + this.config.deviceId;
                     const boundingBox = childrenSmallBoxes[pieceName].boundingBox;
@@ -59,24 +59,24 @@ module.exports = class ScrapingIndexCreator {
 
 
                     const record = {
-                        piece_id: pieceId, piece_name: pieceName, 
-                        city_name: cityName, device_id: this.config.deviceId, 
+                        piece_id: pieceId, piece_name: pieceName,
+                        city_name: cityName, device_id: this.config.deviceId,
                         scraped: false,
                         bounding_box1_x: boundingBox[0][0], bounding_box1_y: boundingBox[0][1],
                         bounding_box2_x: boundingBox[1][0], bounding_box2_y: boundingBox[1][1],
-                        center_point_x:centerPoint[0], 
-                        center_point_y:centerPoint[1], method:"boundingBox"
+                        center_point_x: centerPoint[0],
+                        center_point_y: centerPoint[1], method: "boundingBox"
                     }
                     this.scrapingIndex.push(record);
                     await this.db.saveScrapingPiecesIndex(record);
-                    
+
                 }
             }
-        } 
+        }
         console.log(this.scrapingIndex);
     }
 
-    
+
     calculateNumberRows(boxSize) {
         let result = Math.floor(boxSize / this.maxSize)
         // we make sure the number is not too small (must be bigger than minNumberRows)

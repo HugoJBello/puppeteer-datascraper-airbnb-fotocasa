@@ -60,8 +60,8 @@ module.exports = class ScraperDataAccess {
     }
 
     async saveExecutionLog(executionLogRecord) {
-        const sql = `REPLACE INTO scraping_execution_log(scraping_id, last_piece) 
-        values("${executionLogRecord.scraping_id}", "${executionLogRecord.last_piece}")`;
+        const sql = `REPLACE INTO scraping_execution_log(scraping_id, last_piece, last_result) 
+        values("${executionLogRecord.scraping_id}", "${executionLogRecord.last_piece}", "${executionLogRecord.last_result}")`;
         return await this.runQuery(sql);
     }
 
@@ -73,7 +73,7 @@ module.exports = class ScraperDataAccess {
     }
 
     async saveScrapingResults(scapingResultsRecord) {
-        const sql = `REPLACE INTO scraping_results(piece_id, scraping_id, app_id, device_id, date_scraped, average_prize_buy, number_of_ads_buy, average_prize_rent, number_of_ads_rent, extra_data) values( "${scapingResultsRecord.piece_id}",  "${scapingResultsRecord.scraping_id}", "${scapingResultsRecord.app_id}", "${scapingResultsRecord.device_id}", sysdate(),${scapingResultsRecord.average_prize_buy}, ${scapingResultsRecord.number_of_ads_buy},${scapingResultsRecord.average_prize_rent}, ${scapingResultsRecord.number_of_ads_rent}, "${scapingResultsRecord.extra_data}");`
+        const sql = `REPLACE INTO scraping_results(result_id, piece_id, scraping_id, app_id, device_id, date_scraped, average_prize_buy, number_of_ads_buy, average_prize_rent, number_of_ads_rent, extra_data) values( "${scapingResultsRecord.result_id}", "${scapingResultsRecord.piece_id}",  "${scapingResultsRecord.scraping_id}", "${scapingResultsRecord.app_id}", "${scapingResultsRecord.device_id}", sysdate(),${scapingResultsRecord.average_prize_buy}, ${scapingResultsRecord.number_of_ads_buy},${scapingResultsRecord.average_prize_rent}, ${scapingResultsRecord.number_of_ads_rent}, "${scapingResultsRecord.extra_data}");`
         return await this.runQuery(sql);
     }
 
@@ -88,7 +88,7 @@ module.exports = class ScraperDataAccess {
         return result[0];
     }
     async setIndexAsNotScraped(device_id) {
-        const sql = `update scraping_pieces_index set scraped = false where scraped = true and device_id = "${device_id}";`;
+        const sql = `update scraping_pieces_index set scraped = false where device_id = "${device_id}";`;
         return await this.runQuery(sql);
     }
 
@@ -126,7 +126,7 @@ module.exports = class ScraperDataAccess {
         return result;
     }
 
-    async updateGeoJsonField(geojson_coordinates,piece_id){
+    async updateGeoJsonField(geojson_coordinates, piece_id) {
         const sql = `update scraping_pieces_index set geojson_coordinates="${geojson_coordinates}", method="cusec" where piece_id = "${piece_id}"`;
         const result = await this.runQuery(sql);
         return result;

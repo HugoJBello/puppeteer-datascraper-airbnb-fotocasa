@@ -22,7 +22,9 @@ CREATE TABLE IF NOT EXISTS scraping_pieces_index (piece_id VARCHAR(150) not null
                                     geojson_coordinates LONGTEXT,
                                     method VARCHAR(150));
 
-CREATE TABLE IF NOT EXISTS scraping_results (piece_id VARCHAR(150) NOT NULL key references scraping_pieces_index(piece_id),
+CREATE TABLE IF NOT EXISTS scraping_results (
+                                result_id VARCHAR(350) NOT NULL key,
+                                piece_id VARCHAR(150) NOT NULL references scraping_pieces_index(piece_id),
 								scraping_id VARCHAR(150),
                                 app_id VARCHAR(150),
                                 device_id VARCHAR(150),
@@ -34,7 +36,8 @@ CREATE TABLE IF NOT EXISTS scraping_results (piece_id VARCHAR(150) NOT NULL key 
                                 extra_data TEXT);
                                 
 CREATE TABLE IF NOT EXISTS scraping_execution_log (scraping_id VARCHAR(150) not null key,
-                                last_piece VARCHAR(150) not null references scraping_results(piece_id)
+                                last_piece VARCHAR(150) not null references scraping_results(piece_id),
+                                last_result VARCHAR(150) not null references scraping_results(result_id)
                                 );
                                 
 -- data input mocked
