@@ -61,7 +61,7 @@ module.exports = class ScraperDataAccess {
 
     async saveExecutionLog(executionLogRecord) {
         const sql = `REPLACE INTO scraping_execution_log(scraping_id, last_piece, last_result) 
-        values("${executionLogRecord.scraping_id}", "${executionLogRecord.last_piece}", "${executionLogRecord.last_result}")`;
+        values("${executionLogRecord.scraping_id}", "${executionLogRecord.last_piece}", "${executionLogRecord.result_id}")`;
         return await this.runQuery(sql);
     }
 
