@@ -6,7 +6,7 @@ module.exports = class AirbnbBoxScraper {
     constructor() {
         this.timeWaitStart = 3 * 1000;
         this.timeWaitClick = 2 * 1000;
-        this.retries = 3;
+        this.retries = 10;
 
         this.browser = null;
         this.page = null;
