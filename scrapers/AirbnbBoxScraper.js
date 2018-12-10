@@ -5,7 +5,7 @@ const fs = require('fs');
 module.exports = class AirbnbBoxScraper {
     constructor() {
         this.timeWaitStart = 3 * 1000;
-        this.timeWaitClick = 1000;
+        this.timeWaitClick = 2 * 1000;
         this.retries = 3;
 
         this.browser = null;
@@ -27,8 +27,8 @@ module.exports = class AirbnbBoxScraper {
 
 
         await this.initializePuppeteer();
-        try{
-            
+        try {
+
             await this.page.goto(url);
             await this.page.waitFor(this.timeWaitStart);
 
@@ -45,13 +45,13 @@ module.exports = class AirbnbBoxScraper {
                     console.log("results were found");
                     numberOfEntries = await this.extractNumberOfEntries();
                     console.log("found " + numberOfEntries + " entries in this page");
-                    if (numberOfEntries && numberOfEntries !== 0){
+                    if (numberOfEntries && numberOfEntries !== 0) {
                         prize = await this.extracPrize();
                         console.log("average prize " + prize + "  in this page");
                     } else {
                         prize = 0;
                     }
-                    
+
                 } else {
                     console.log("no results were found for this search");
                     prize = 0;
@@ -66,10 +66,10 @@ module.exports = class AirbnbBoxScraper {
             await this.page.screenshot({ path: 'example.png' });
             await this.browser.close();
 
-            return { averagePrize:prize || 0, numberOfAds:numberOfEntries || 0, adData:""};
-        } catch (err){
+            return { averagePrize: prize || 0, numberOfAds: numberOfEntries || 0, adData: "" };
+        } catch (err) {
             console.error(err);
-            return {averagePrize:0, numberOfAds:0, adData:""};
+            return { averagePrize: 0, numberOfAds: 0, adData: "" };
         }
     }
 
@@ -99,13 +99,13 @@ module.exports = class AirbnbBoxScraper {
     }
 
     async extracPrize() {
-        try{
+        try {
             await this.clickPrizeButton();
             return await this.readPrize();
         } catch (err) {
             return 0
         }
-        
+
     }
 
     async clickPrizeButton() {
