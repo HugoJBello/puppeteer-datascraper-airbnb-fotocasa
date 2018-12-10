@@ -56,7 +56,7 @@ module.exports = class AirbnbBoxScraper {
                     console.log("no results were found for this search");
                     prize = 0;
                 }
-                tryAgain = (!numberOfEntries && tryCount < this.retries);
+                tryAgain = ((!numberOfEntries || !prize) && tryCount < this.retries);
                 tryCount = tryCount + 1;
                 //await this.page.waitFor(this.timeWaitClick);
             }
@@ -103,7 +103,7 @@ module.exports = class AirbnbBoxScraper {
             await this.clickPrizeButton();
             return await this.readPrize();
         } catch (err) {
-            return 0
+            return undefined
         }
 
     }
