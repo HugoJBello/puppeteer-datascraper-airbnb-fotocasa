@@ -21,7 +21,8 @@ describe('App', function () {
 
 
         it('scraping results shoud be not null', async function () {
-            const resultAlquiler = await scraper.extractPrizeAndMetersUsingBoundingBox(boundingBox);
+            const resultAlquiler = await scraper.extractDataFromBox(boundingBox);
+            console.log(resultAlquiler);
             assert(resultAlquiler !== null);
         });
 
