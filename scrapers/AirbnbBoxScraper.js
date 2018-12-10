@@ -5,8 +5,8 @@ const fs = require('fs');
 module.exports = class AirbnbBoxScraper {
     constructor() {
         this.timeWaitStart = 3 * 1000;
-        this.timeWaitClick = 2 * 1000;
-        this.retries = 10;
+        this.timeWaitClick = 1 * 1000;
+        this.retries = 5;
 
         this.browser = null;
         this.page = null;
@@ -129,8 +129,10 @@ module.exports = class AirbnbBoxScraper {
 
     async readPrize() {
         try {
-            const div = await this.page.$('div._1nhodd4u');
-            const text = await (await div.getProperty('textContent')).jsonValue();
+            let text = await this.page.evaluate(() => {
+                let elements = document.getElementsByClassName("_1nhodd4u")[0].innerText
+                return elements;
+            });
             const prize = parseFloat(text.replace("El precio medio por noche es de ", "").replace("€", "").trim());
             return prize;
         } catch (err) {
