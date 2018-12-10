@@ -45,7 +45,7 @@ module.exports = class ScraperApp {
                 const dataRent = await this.scraper.extractDataFromBox(boundingBox, centerPoint, "alquiler");
                 await this.saveData(nextPieceToScrap, dataBuy, dataRent);
             } else {
-                const data = await this.scraper.extractDataFromBox(boundingBox);
+                const data = await this.scraper.interceptAjaxCall(boundingBox);
                 console.log(data);
                 await this.saveData(nextPieceToScrap, undefined, data);
             }

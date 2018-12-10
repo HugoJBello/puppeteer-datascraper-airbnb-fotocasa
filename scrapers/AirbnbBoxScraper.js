@@ -212,6 +212,70 @@ module.exports = class AirbnbBoxScraper {
         fs.writeFileSync("./data/htmPage.html", bodyHTML);
     }
 
+    async interceptAjaxCall(boundingBox) {
+        //https://www.airbnb.es/s/madrid/homes?refinement_paths%5B%5D=%2Fhomes&query=madrid&click_referer=t%3ASEE_ALL%7Csid%3Aa7d1f39d-6aca-46ed-978b-e7866130e117%7Cst%3AMAGAZINE_HOMES&allow_override%5B%5D=&map_toggle=true&zoom=18&search_by_map=true&sw_lat=40.41092513867345&sw_lng=-3.703897645186509&ne_lat=40.41257982118033&ne_lng=-3.700771836660386&s_tag=gSIPGig_"];
+        //const url = `https://www.airbnb.es/s/madrid/homes?refinement_paths%5B%5D=%2Fhomes&query=madrid&click_referer=t%3ASEE_ALL%7Csid%3Aa7d1f39d-6aca-46ed-978b-e7866130e117%7Cst%3AMAGAZINE_HOMES&allow_override%5B%5D=&map_toggle=true&zoom=15&search_by_map=true&sw_lat=${boundingBox[1][1]}&sw_lng=${boundingBox[0][0]}&ne_lat=${boundingBox[0][1]}&ne_lng=${boundingBox[1][0]}&s_tag=gSIPGig_`;
+        const url = `https://www.airbnb.es/s/madrid/homes?refinement_paths%5B%5D=%2Fhomes&query=madrid&click_referer=t%3ASEE_ALL%7Csid%3Aa7d1f39d-6aca-46ed-978b-e7866130e117%7Cst%3AMAGAZINE_HOMES&allow_override%5B%5D=&map_toggle=true&zoom=15&search_by_map=true&sw_lat=${boundingBox[1][1]}&sw_lng=${boundingBox[0][0]}&ne_lat=${boundingBox[0][1]}&ne_lng=${boundingBox[1][0]}`;
 
 
+        console.log("---------------------");
+        console.log(url);
+        console.log("\n");
+
+
+        await this.initializePuppeteer();
+        let result;
+        try {
+            this.page.on('response', async  response => {
+
+                const url = await response.url();
+                if (url.indexOf("explore") > -1) {
+                    console.log("-----");
+                    console.log(url);
+                    let averagePrize;
+                    let numberOfAds;
+                    try {
+                        const text = await response.text();
+                        let responseJson = JSON.parse(text);
+
+                        numberOfAds = parseInt(responseJson["explore_tabs"][0]["home_tab_metadata"]["listings_count"]);
+                        averagePrize = responseJson["explore_tabs"][0]["home_tab_metadata"]["price_histogram"]["average_price"];
+                        console.log(averagePrize);
+
+                        if (numberOfAds && numberOfAds > 0) {
+                            const listings = responseJson["explore_tabs"][0]["sections"][2]["listings"]
+                        }
+                        /*
+                        const prizes = []
+                        for (const listing of listings) {
+                            prizes.push(listing.pricing_quote.rate.amount);
+                        }
+
+                        const numberOfAdsInList = prizes.length;
+                        averagePrize = 0;
+                        for (const prize of prizes) {
+                            averagePrize = averagePrize + prize;
+                        }
+                        averagePrize = averagePrize / numberOfAdsInList;
+                        */
+                    } catch (err) {
+                        console.log(err);
+                        await this.browser.close();
+
+                    }
+                    result = { numberOfAds: numberOfAds || 0, averagePrize: averagePrize || 0 }
+                }
+
+            });
+
+            await this.page.goto(url);
+            await this.page.waitFor(this.timeWaitStart);
+            await this.browser.close();
+            return result;
+
+        } catch (err) {
+            await this.browser.close();
+            return { numberOfAds: 0, averagePrize: 0 }
+        }
+    }
 }
