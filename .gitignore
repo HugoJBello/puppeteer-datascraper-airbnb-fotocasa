@@ -6,6 +6,11 @@ yarn-debug.log*
 yarn-error.log*
 example.png
 test/example.png
+
+mantainance/tmp/*
+mantainance/tmp
+mantainance/tmp/
+
 # Runtime data
 pids
 *.pid
