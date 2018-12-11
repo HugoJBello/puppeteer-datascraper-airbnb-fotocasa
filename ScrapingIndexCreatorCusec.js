@@ -91,7 +91,7 @@ module.exports = class ScrapingIndexCreator {
         processedFeature["boundingBox"] = boundingBox;
         const centerPoint = this.getCenterPoint(boundingBox);
         processedFeature["centerPoint"] = centerPoint;
-        processedFeature["geojsonGeometry"] =JSON.stringify({geometry:feature["geometry"]}).replace(new RegExp("\"", 'g'), "'");;
+        processedFeature["geojsonGeometry"] =JSON.stringify({geometry:feature["geometry"]}).replace(new RegExp("\"", 'g'), "'");
         return processedFeature;
 
     }
