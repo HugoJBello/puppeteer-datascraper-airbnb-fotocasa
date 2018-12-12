@@ -36,6 +36,23 @@ module.exports = class GeoJsonGeneratorFromCusec {
                 type: "Polygon", coordinates: []
             }
         };
+        let normalized_prize_buy = 0;
+        let normalized_ads_buy = 0;
+        let normalized_prize_rent = 0;
+        let normalized_ads_rent = 0;
+
+        if (maxValues.maxPrizeBuy !== 0) {
+            normalized_prize_buy = (result.average_prize_buy / maxValues.maxPrizeBuy);
+        }
+        if (maxValues.maxNumberAdsBuy !== 0) {
+            normalized_ads_buy = (result.number_of_ads_buy / maxValues.maxNumberAdsBuy);
+        }
+        if (maxValues.maxPrizeRent !== 0) {
+            normalized_prize_rent = (result.average_prize_rent / maxValues.maxPrizeRent);
+        }
+        if (maxValues.maxNumberAdsRent !== 0) {
+            normalized_ads_rent = (result.number_of_ads_rent / maxValues.maxNumberAdsRent);
+        }
 
         if (result) {
             feature.properties = {
@@ -44,10 +61,10 @@ module.exports = class GeoJsonGeneratorFromCusec {
                 average_prize_buy: result.average_prize_buy,
                 number_of_ads_rent: result.number_of_ads_rent,
                 average_prize_rent: result.average_prize_rent,
-                normalized_prize_buy: (result.average_prize_buy / maxValues.maxPrizeBuy),
-                normalized_ads_buy: (result.number_of_ads_buy / maxValues.maxNumberAdsBuy),
-                normalized_prize_rent: (result.average_prize_rent / maxValues.maxPrizeRent),
-                normalized_ads_rent: (result.number_of_ads_rent / maxValues.maxNumberAdsRent),
+                normalized_prize_buy,
+                normalized_ads_buy,
+                normalized_prize_rent,
+                normalized_ads_rent,
                 date: result.date_scraped
             };
 
@@ -85,11 +102,16 @@ module.exports = class GeoJsonGeneratorFromCusec {
         let maxNumberAdsRent = 0;
         let maxNumberAdsBuy = 0;
         for (const result of results) {
-            maxPrizeBuy = Math.max(maxPrizeBuy, result.average_prize_buy);
-            maxPrizeRent = Math.max(maxPrizeRent, result.average_prize_rest);
-            maxNumberAdsBuy = Math.max(maxNumberAdsBuy, result.number_of_ads_buy);
-            maxNumberAdsRent = Math.max(maxNumberAdsBuy, result.number_of_ads_rent);
+            if (result.average_prize_buy) maxPrizeBuy = Math.max(maxPrizeBuy, result.average_prize_buy);
+            if (result.average_prize_rent) maxPrizeRent = Math.max(maxPrizeRent, result.average_prize_rent);
+            if (result.number_of_ads_buy) maxNumberAdsBuy = Math.max(maxNumberAdsBuy, result.number_of_ads_buy);
+            if (result.number_of_ads_rent) maxNumberAdsRent = Math.max(maxNumberAdsRent, result.number_of_ads_rent);
         }
-        return { maxNumberAdsBuy, maxNumberAdsRent, maxPrizeBuy, maxPrizeRent };
+        return {
+            maxNumberAdsBuy: maxNumberAdsBuy,
+            maxNumberAdsRent: maxNumberAdsRent,
+            maxPrizeBuy: maxPrizeBuy,
+            maxPrizeRent: maxPrizeRent
+        };
     }
 }
